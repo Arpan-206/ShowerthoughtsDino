@@ -6,14 +6,12 @@ import praw
 import asyncio
 import logging
 
-from rich import print
-
 # Create a log file here
 logging.basicConfig(filename='bot.log', filemode='w', format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO, datefmt='%Y-%m-%d %H:%M:%S')
 
 load_dotenv()
-
+logging.info("Loading environment variables")
 # Initializes your app with your bot token and socket mode handler
 app = AsyncApp(token=os.environ.get("SLACK_BOT_TOKEN"))
 
@@ -90,7 +88,7 @@ async def daily_top_10():
     logging.info("Posting the top 10 shower thoughts to Slack")
 
     await app.client.chat_postMessage(
-        channel="#shower-thoughts",
+        channel=f'#{os.environ.get("SLACK_CHANNEL")}',
         blocks=my_message["blocks"]
     )
 
