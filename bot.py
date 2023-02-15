@@ -7,11 +7,10 @@ import asyncio
 import logging
 
 # Create a log file here
-logging.basicConfig(filename='bot.log', filemode='w', format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO, datefmt='%Y-%m-%d %H:%M:%S')
 
 load_dotenv()
-logging.info("Loading environment variables")
 # Initializes your app with your bot token and socket mode handler
 app = AsyncApp(token=os.environ.get("SLACK_BOT_TOKEN"))
 
@@ -22,27 +21,6 @@ reddit = praw.Reddit(
 )
 
 subreddit = reddit.subreddit("ShowerThoughts")
-
-
-@app.command("/random-showerthought")
-async def repeat_text(ack, respond, command):
-    # Acknowledge command request
-    ack()
-
-    submission = subreddit.random()
-    my_message = {
-        "blocks": [
-            {
-                "type": "section",
-                "text": {
-                    "type": "mrkdwn",
-                    "text": f"\"{submission.title}\""
-                }
-            }
-
-        ]
-    }
-    await respond(f"{command['text']}")
 
 
 async def daily_top_10():
@@ -100,6 +78,12 @@ async def main():
     asyncio.ensure_future(daily_top_10())
     handler = AsyncSocketModeHandler(app, os.environ["SLACK_APP_TOKEN"])
     await handler.start_async()
+
+@app.event("message")
+async def message(payload, say):
+    """Pass for now"""
+    pass
+        
 
 if __name__ == "__main__":
     import asyncio
